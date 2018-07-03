@@ -467,8 +467,8 @@ int main(void){
   BSP_Clock_InitFastest();
   Profile_Init();               // initialize the 7 hardware profiling pins
   // change 1000 to 4-digit number from edX 
-  TExaS_Init(GRADER, 1000 );         // initialize the Lab 1 grader
-//  TExaS_Init(LOGICANALYZER, 1000);  // initialize the Lab 1 logic analyzer
+  TExaS_Init(GRADER, 1658);         // initialize the Lab 1 grader
+	//TExaS_Init(LOGICANALYZER, 1000);  // initialize the Lab 1 logic analyzer
   Task0_Init();    // microphone init
   Task1_Init();    // accelerometer init
   Task2_Init();    // light init
@@ -479,11 +479,15 @@ int main(void){
   EnableInterrupts(); // interrupts needed for grader to run
   while(1){
     for(int i=0; i<10; i++){ // runs at about 10 Hz
-      Task0();  // sample microphone
+      //Task0();  // sample microphone
       Task1();  // sample accelerometer
       Task3();  // check the buttons and change mode if pressed
       Task4();  // update the plot
-      BSP_Delay1ms(100);
+      for (int j=0;j<100;j++){
+				Task0();
+				BSP_Delay1ms(1);
+			}
+			//BSP_Delay1ms(100);
     }
     Task2();   // sample light at 1 Hz
     Task5();   // update the LCD text at 1 Hz
