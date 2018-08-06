@@ -409,10 +409,13 @@ int main(void){
   // Task 0 should run every 1ms and Task 1 should run every 100ms
   OS_AddPeriodicEventThreads(&Task0, 1, &Task1, 100);
   // Task2, Task3, Task4, Task5 are main threads
-  OS_AddThreads(&Task2, &Task3, &Task4, &Task5);
+  // OS_AddThreads(&Task2, &Task3, &Task4, &Task5);
+	
+	// Adding three tasks to the Thread control block;
+	OS_AddThreads3(&Task0, &Task1, &Task2);
   // when grading change 1000 to 4-digit number from edX
-  TExaS_Init(GRADER, 1000);          // initialize the Lab 2 grader
-//  TExaS_Init(LOGICANALYZER, 1000); // initialize the Lab 2 logic analyzer
+  //TExaS_Init(GRADER, 1000);          // initialize the Lab 2 grader
+  //TExaS_Init(LOGICANALYZER, 1000); // initialize the Lab 2 logic analyzer
   OS_Launch(BSP_Clock_GetFreq()/THREADFREQ); // doesn't return, interrupts enabled in here
   return 0;             // this never executes
 }

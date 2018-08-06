@@ -33,8 +33,42 @@ void OS_Init(void){
 }
 
 void SetInitialStack(int i){
-  //***YOU IMPLEMENT THIS FUNCTION*****
-
+  //IMPLEMENTED
+	tcbs[i].sp = &Stacks[i][STACKSIZE-16];	//thread stack pointer
+	Stacks[i][STACKSIZE-1] = 0x01000000;		//thumb bit - PSR Register
+	Stacks[i][STACKSIZE-3] = 0x14141414;		//R14
+	Stacks[i][STACKSIZE-4] = 0x12121212;		//R12
+	Stacks[i][STACKSIZE-5] = 0x03030303;		//R3
+	Stacks[i][STACKSIZE-6] = 0x02020202;		//R2
+	Stacks[i][STACKSIZE-7] = 0x01010101;		//R1
+	Stacks[i][STACKSIZE-8] = 0x00000000;		//R0
+	Stacks[i][STACKSIZE-9] = 0x11111111;		//R11
+	Stacks[i][STACKSIZE-10] = 0x10101010;		//R10
+	Stacks[i][STACKSIZE-11] = 0x09090909;		//R9
+	Stacks[i][STACKSIZE-12] = 0x08080808;		//R8
+	Stacks[i][STACKSIZE-13] = 0x07070707;		//R7
+	Stacks[i][STACKSIZE-14] = 0x06060606;		//R6
+	Stacks[i][STACKSIZE-15] = 0x05050505;		//R5
+	Stacks[i][STACKSIZE-16] = 0x04040404;		//R4
+	
+	// 84 |_R4__|			<-- SP is made to point to this in the first line
+	// 85 |_R5__|
+	// 86 |_R6__|
+	// 87 |_R7__|
+	// 88 |_R8__|
+	// 89 |_R9__|
+	// 90 |_R10_|
+	// 91 |_R11_|
+	// 92 |_R0__|
+	// 93 |_R1__|
+	// 94 |_R2__|
+	// 95 |_R3__|
+	// 96 |_R12_|		R13 is the SP and it is stored in the global tcb queue
+	// 97 |_R14_|
+	// 98 |_____|		// This will be set as PC (R15) but not in this function
+	// 99 |_PSR_|
+	// Stack initialization for the ith thread control block
+	// Not the correct values stored in the Stack except PSR
 }
 
 //******** OS_AddThreads ***************
@@ -50,7 +84,6 @@ int OS_AddThreads(void(*thread0)(void),
 // initialize RunPt
 // initialize four stacks, including initial PC
   //***YOU IMPLEMENT THIS FUNCTION*****
-
   return 1;               // successful
 }
 
@@ -65,8 +98,25 @@ int OS_AddThreads3(void(*task0)(void),
 // initialize TCB circular list (same as RTOS project)
 // initialize RunPt
 // initialize four stacks, including initial PC
-  //***YOU IMPLEMENT THIS FUNCTION*****
-
+  //IMPLEMENTED
+	int32_t status;
+	status = StartCritical(); //Start of Critical Section
+	// tcbs[3] --> Global Thread Queue
+	tcbs[0].next=&tcbs[1];
+	tcbs[1].next=&tcbs[2];
+	tcbs[2].next=&tcbs[0];
+	//Set Initial Stack for each thread and set the PC for each thread in the stack
+	SetInitialStack(0);
+	Stacks[0][STACKSIZE-2]=(int32_t) (task0);
+  SetInitialStack(1);
+  Stacks[1][STACKSIZE-2]=(int32_t) (task1);
+  SetInitialStack(2);
+  Stacks[2][STACKSIZE-2]=(int32_t) (task2);
+									 
+	//Setting the Run Pointer to Task0
+	RunPt = &tcbs[0];
+	//End the Critical Section
+	EndCritical(status);
   return 1;               // successful
 }
                  
