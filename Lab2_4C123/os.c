@@ -17,6 +17,23 @@ tcbType tcbs[NUMTHREADS];
 tcbType *RunPt;
 int32_t Stacks[NUMTHREADS][STACKSIZE];
 
+// ******** Mail_Box variables *********** //IMPLEMENTED
+uint32_t Mail; 			//Variable to store shared data
+int32_t Send; 		//Send variable to check if something is sent
+int32_t Ack; 		//Acknowledgement of retrieval
+
+// ******** Periodic Event thread variables ***** //IMPLEMENTED
+typedef void (*p) (void);
+
+typedef struct periodic{
+	p period;		//Pointer to function - no braces to be added for return type
+	uint32_t count;					//Period value
+} periodic;
+
+struct periodic p_thread1;
+struct periodic p_thread2;
+uint32_t Full;
+uint32_t Counter;	 //Counter for Event threads
 
 // ******** OS_Init ************
 // Initialize operating system, disable interrupts
@@ -29,7 +46,7 @@ void OS_Init(void){
   BSP_Clock_InitFastest();// set processor clock to fastest speed
   // initialize any global variables as needed
   //***YOU IMPLEMENT THIS FUNCTION*****
-
+	//IMPLEMENTED
 }
 
 void SetInitialStack(int i){
@@ -83,7 +100,28 @@ int OS_AddThreads(void(*thread0)(void),
 // initialize TCB circular list
 // initialize RunPt
 // initialize four stacks, including initial PC
-  //***YOU IMPLEMENT THIS FUNCTION*****
+//IMPLEMENTED
+	int32_t status;
+	status = StartCritical(); //Starting critical section
+	tcbs[0].next=&tcbs[1];
+	tcbs[1].next=&tcbs[2];
+	tcbs[2].next=&tcbs[3];
+	tcbs[3].next=&tcbs[0];
+	//Set Initial Stack for each thread and set the PC for each thread in the stack
+	SetInitialStack(0);
+	Stacks[0][STACKSIZE-2]=(int32_t) (thread0);
+  SetInitialStack(1);
+  Stacks[1][STACKSIZE-2]=(int32_t) (thread1);
+  SetInitialStack(2);
+  Stacks[2][STACKSIZE-2]=(int32_t) (thread2);
+	SetInitialStack(3);
+  Stacks[3][STACKSIZE-2]=(int32_t) (thread3);
+	
+	//Setting the Run Pointer to Task0
+	RunPt = &tcbs[0];
+	//End the Critical Section
+	EndCritical(status);
+	
   return 1;               // successful
 }
 
@@ -133,7 +171,14 @@ int OS_AddThreads3(void(*task0)(void),
 int OS_AddPeriodicEventThreads(void(*thread1)(void), uint32_t period1,
   void(*thread2)(void), uint32_t period2){
   //***YOU IMPLEMENT THIS FUNCTION*****
-
+	//IMPLEMENTED
+	//Adds the details of the periodic threads to the global variables
+	p_thread1.period = thread1;
+	p_thread1.count = period1;
+		
+	p_thread2.period = thread2;
+	p_thread2.count = period2;
+		
   return 1;
 }
 
@@ -152,10 +197,18 @@ void OS_Launch(uint32_t theTimeSlice){
 }
 // runs every ms
 void Scheduler(void){ // every time slice
-  // run any periodic event threads if needed
-  // implement round robin scheduler, update RunPt
-  //***YOU IMPLEMENT THIS FUNCTION*****
-
+  //IMPLEMENTED for Basic Round Robin Scheduling
+	/*Check if any periodic thread is scheduled to run before context switching*/
+	//uint32_t time;
+	Full = Full+1;
+	Counter=(Full)%100; //Counter value will be between 0 and 99
+	//if((Counter%(p_thread1.count-1))==0){
+		p_thread1.period();
+	//}
+	if((Counter%p_thread2.count)==0){
+		p_thread2.period();
+	}
+	RunPt=RunPt->next;
 }
 
 // ******** OS_InitSemaphore ************
@@ -165,7 +218,10 @@ void Scheduler(void){ // every time slice
 // Outputs: none
 void OS_InitSemaphore(int32_t *semaPt, int32_t value){
   //***YOU IMPLEMENT THIS FUNCTION*****
-
+	//IMPLEMENTED
+	*(semaPt) = value; //The value of the initialization assigned to semaphore decides the purpose for which it is used
+										 // Value = 0 --> For synchronization
+										 // Value = 1 --> For Mutex (Mutual exclusion)
 }
 
 // ******** OS_Wait ************
@@ -175,7 +231,14 @@ void OS_InitSemaphore(int32_t *semaPt, int32_t value){
 // Inputs:  pointer to a counting semaphore
 // Outputs: none
 void OS_Wait(int32_t *semaPt){
-
+	//IMPLEMENTED
+	DisableInterrupts();
+	while((*semaPt)==0){
+		EnableInterrupts();		//This to make sure interrupts can occur
+		DisableInterrupts();
+	}
+	(*semaPt)--;
+	EnableInterrupts();
 }
 
 // ******** OS_Signal ************
@@ -186,7 +249,10 @@ void OS_Wait(int32_t *semaPt){
 // Outputs: none
 void OS_Signal(int32_t *semaPt){
 //***YOU IMPLEMENT THIS FUNCTION*****
-
+//IMPLEMENTED
+	DisableInterrupts();	//Increment the value of the semaphore
+	(*semaPt)+=1;
+	EnableInterrupts();
 }
 
 
@@ -200,7 +266,8 @@ void OS_Signal(int32_t *semaPt){
 void OS_MailBox_Init(void){
   // include data field and semaphore
   //***YOU IMPLEMENT THIS FUNCTION*****
-
+	OS_InitSemaphore(&Send,0);	//Initialize the send variable
+	OS_InitSemaphore(&Ack,0);		//Initialize the Ack variable
 }
 
 // ******** OS_MailBox_Send ************
@@ -211,7 +278,12 @@ void OS_MailBox_Init(void){
 // Errors: data lost if MailBox already has data
 void OS_MailBox_Send(uint32_t data){
   //***YOU IMPLEMENT THIS FUNCTION*****
-
+	Mail = data;					//Setting the global variable to store the data
+	OS_Signal(&Send);		//This is help synchronize the send and receive
+	//Send=1 after the execution of the above line
+	
+	//Commenting the below line as it stalls the periodic thread
+	//OS_Wait(&Ack);			//Wait for the acknowledgement of retrieval
 }
 
 // ******** OS_MailBox_Recv ************
@@ -224,6 +296,9 @@ void OS_MailBox_Send(uint32_t data){
 // Errors:  none
 uint32_t OS_MailBox_Recv(void){ uint32_t data;
   //***YOU IMPLEMENT THIS FUNCTION*****
+	OS_Wait(&Send);     //This semaphore will be set to 1 once the data is sent
+	data = Mail;					//Retrieve the data from the global variable
+	OS_Signal(&Ack);		//Acknowledge that the data has been received
   return data;
 }
 

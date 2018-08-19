@@ -26,13 +26,14 @@
 #ifndef __OS_H
 #define __OS_H  1
 // grader needs access to TCBs and stacks
-#define NUMTHREADS  3        // maximum number of threads: This was 4 changed to 3 threads
+#define NUMTHREADS  4        // maximum number of threads: 4 Main threads are running
 #define STACKSIZE   100      // number of 32-bit words in stack per thread
 struct tcb{
   int32_t *sp;       // pointer to stack (valid for threads not running
   struct tcb *next;  // linked-list pointer
 };
 typedef struct tcb tcbType;
+
 
 // ******** OS_Init ************
 // Initialize operating system, disable interrupts

@@ -138,7 +138,7 @@ void Task1_Init(void){
 // Outputs: none
 void Task1(void){uint32_t squared;
   TExaS_Task1();     // records system time in array, toggles virtual logic analyzer
-  Profile_Toggle1(); // viewed by a real logic analyzer to know Task1 started
+  //Profile_Toggle1(); // viewed by a real logic analyzer to know Task1 started
 
   BSP_Accelerometer_Input(&AccX, &AccY, &AccZ);
   squared = AccX*AccX + AccY*AccY + AccZ*AccZ;
@@ -409,12 +409,12 @@ int main(void){
   // Task 0 should run every 1ms and Task 1 should run every 100ms
   OS_AddPeriodicEventThreads(&Task0, 1, &Task1, 100);
   // Task2, Task3, Task4, Task5 are main threads
-  // OS_AddThreads(&Task2, &Task3, &Task4, &Task5);
+   OS_AddThreads(&Task2, &Task3, &Task4, &Task5);
 	
 	// Adding three tasks to the Thread control block;
-	OS_AddThreads3(&Task0, &Task1, &Task2);
+	//OS_AddThreads3(&Task0, &Task1, &Task2);	//For the purpose of Lab2 we require to assign 4 threads
   // when grading change 1000 to 4-digit number from edX
-  //TExaS_Init(GRADER, 1000);          // initialize the Lab 2 grader
+  TExaS_Init(GRADER, 4398);          // initialize the Lab 2 grader
   //TExaS_Init(LOGICANALYZER, 1000); // initialize the Lab 2 logic analyzer
   OS_Launch(BSP_Clock_GetFreq()/THREADFREQ); // doesn't return, interrupts enabled in here
   return 0;             // this never executes
@@ -422,7 +422,7 @@ int main(void){
 //******************Step 1**************************
 // implement and test the semaphores
 int32_t s1,s2;
-int main_step1(void){
+int main_step1_tested(void){
   OS_InitSemaphore(&s1,0);
   OS_InitSemaphore(&s2,1);
   while(1){
@@ -438,7 +438,8 @@ int main_step1(void){
 // Implement the three mailbox functions as defined in OS.c and OS.h
 // Use this a simple main program to test the mailbox functions.
 uint32_t Out;
-int main_step2(void){ uint32_t in=0;
+int main_step2_tested(void){ 
+	uint32_t in=0;
   OS_MailBox_Init();
   while(1){
     OS_MailBox_Send(in);
@@ -454,7 +455,7 @@ int main_step2(void){ uint32_t in=0;
 //  OS_Init
 //  OS_AddThreads3 (with just 3 threads for now)
 //  OS_Launch
-int main_step3(void){
+int main_step3_good(void){
   OS_Init();
   Profile_Init();  // initialize the 7 hardware profiling pins
   Task0_Init();    // microphone init
@@ -468,14 +469,14 @@ int main_step3(void){
 // Task2 will stall
   OS_AddThreads3(&Task3, &Task4, &Task5);
   // when grading change 1000 to 4-digit number from edX
-  TExaS_Init(GRADER, 1000);          // initialize the Lab 2 grader
-//  TExaS_Init(LOGICANALYZER, 1000); // initialize the Lab 2 logic analyzer
+  //TExaS_Init(GRADER, 1000);          // initialize the Lab 2 grader
+  TExaS_Init(LOGICANALYZER, 1000); // initialize the Lab 2 logic analyzer
   OS_Launch(BSP_Clock_GetFreq()/THREADFREQ); // doesn't return, interrupts enabled in here
   return 0;             // this never executes
 }
 //***************Step 4*************************
 // Increase to 4 threads
-int main_step4(void){
+int main_step4_tested(void){
   OS_Init();
   Profile_Init();  // initialize the 7 hardware profiling pins
   Task0_Init();    // microphone init
@@ -491,8 +492,8 @@ int main_step4(void){
 // Tasks 2 and 5 will stall
   OS_AddThreads(&Task2, &Task3, &Task4, &Task5);
   // when grading change 1000 to 4-digit number from edX
-  TExaS_Init(GRADER, 1000);          // initialize the Lab 2 grader
-//  TExaS_Init(LOGICANALYZER, 1000); // initialize the Lab 2 logic analyzer
+  //TExaS_Init(GRADER, 1000);          // initialize the Lab 2 grader
+  TExaS_Init(LOGICANALYZER, 1000); // initialize the Lab 2 logic analyzer
   OS_Launch(BSP_Clock_GetFreq()/THREADFREQ); // doesn't return, interrupts enabled in here
   return 0;             // this never executes
 }
@@ -519,8 +520,8 @@ int main_step5(void){
   // Task2, Task3, Task4, Task5 are main threads
   OS_AddThreads(&Task2, &Task3, &Task4, &Task5);
   // when grading change 1000 to 4-digit number from edX
-  TExaS_Init(GRADER, 1000);          // initialize the Lab 2 grader
-//  TExaS_Init(LOGICANALYZER, 1000); // initialize the Lab 2 logic analyzer
+  //TExaS_Init(GRADER, 1000);          // initialize the Lab 2 grader
+  TExaS_Init(LOGICANALYZER, 1000); // initialize the Lab 2 logic analyzer
   OS_Launch(BSP_Clock_GetFreq()/THREADFREQ); // doesn't return, interrupts enabled in here
   return 0;             // this never executes
 }

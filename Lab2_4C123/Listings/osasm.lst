@@ -24,30 +24,94 @@ ARM Macro Assembler    Page 1
                                                              thread
    15 00000000                 EXPORT           StartOS
    16 00000000                 EXPORT           SysTick_Handler
-   17 00000000                 IMPORT           Scheduler
+   17 00000000                 IMPORT           Scheduler   ; This tells that S
+                                                            cheduler is written
+                                                             in C and to import
+                                                             that name
    18 00000000         
    19 00000000         
    20 00000000         SysTick_Handler                      ; 1) Saves R0-R3,R1
-                                                            2,LR,PC,PSR
+                                                            2,LR,PC,PSR as part
+                                                             of ISR
    21 00000000 B672            CPSID            I           ; 2) Prevent interr
                                                             upt during switch
-   22 00000002         
-   23 00000002 B662            CPSIE            I           ; 9) tasks run with
+   22 00000002 E92D 0FF0       PUSH             {R4-R11}    ; Only R4-R11 are l
+                                                            eft to be pushed
+   23 00000006 480F            LDR              R0,=RunPt   ; Obtain the addres
+                                                            s of current RunPt
+   24 00000008 6801            LDR              R1,[R0]     ; Get the value of 
+                                                            RunPt
+   25 0000000A F8C1 D000       STR              SP,[R1]     ; Update the value 
+                                                            of SP for the curre
+                                                            nt thread
+   26 0000000E         ;ADD R1,#4       ; Add 4 bytes to the address to obtain 
+                       the value of next
+   27 0000000E         ;To write scheduler in C we will call Scheduler from her
+                       e
+   28 0000000E         ;LDR R1,[R1,#4]      ; Obtain the address of new thread'
+                       s stack / Value stored in RunPt
+   29 0000000E         ;STR R1,[R0]      ; Update the RunPt to point to next
+   30 0000000E B501            PUSH             {R0, LR}    ; Preserve RunPt va
+                                                            lue and LX value
+   31 00000010 F7FF FFFE       BL               Scheduler   ; Invoke the Schedu
+                                                            ler sub-routine
+   32 00000014 E8BD 4001       POP              {R0, LR}    ; Pop it back for u
+                                                            se after the call
+   33 00000018 6801            LDR              R1,[R0]     ; Get the value of 
+                                                            RunPt
+   34 0000001A F8D1 D000       LDR              SP,[R1]     ; Update the new st
+                                                            ack pointer
+   35 0000001E E8BD 0FF0       POP              {R4-R11}    ; Pop only R4-R11. 
+                                                            Rest will be automa
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+                                                            tically popped on r
+                                                            eturn from ISR
+   36 00000022         ;MOV LX,#FFFFFFF9     ; This number would be the current
+                        value of the LR
+   37 00000022 B662            CPSIE            I           ; 9) tasks run with
                                                              interrupts enabled
                                                             
-   24 00000004 4770            BX               LR          ; 10) restore R0-R3
+   38 00000024 4770            BX               LR          ; 10) restore R0-R3
                                                             ,R12,LR,PC,PSR
-   25 00000006         
-   26 00000006         StartOS
-   27 00000006         
-   28 00000006 B662            CPSIE            I           ; Enable interrupts
+   39 00000026         
+   40 00000026         StartOS
+   41 00000026         ;Get the context of first thread on to the processor
+   42 00000026 4807            LDR              R0, =RunPt
+   43 00000028 6801            LDR              R1, [R0]    ; Get the contents 
+                                                            of the Run pointer 
+                                                            in R1
+   44 0000002A F8D1 D000       LDR              SP, [R1]    ; Stack pointer is 
+                                                            updated for the thr
+                                                            ead
+   45 0000002E E8BD 0FF0       POP              {R4-R11}    ; Pop R4-R11
+   46 00000032 BC0F            POP              {R0-R3}     ; Pop R0-R3
+   47 00000034 F85D CB04       POP              {R12}       ; Pop R12
+   48 00000038 B001            ADD              SP,#4       ; LR on the stack i
+                                                            s not of use for th
+                                                            e first thread so d
+                                                            iscard it
+   49 0000003A F85D EB04       POP              {LR}        ; PC of the stack w
+                                                            ill stored in LR as
+                                                             after the subrouti
+                                                            ne this will become
+                                                             the PC
+   50 0000003E B001            ADD              SP,#4       ; Discard the PSR a
+                                                            s it is not correct
+                                                            
+   51 00000040 B662            CPSIE            I           ; Enable interrupts
                                                              at processor level
                                                             
-   29 00000008 4770            BX               LR          ; start first threa
+   52 00000042 4770            BX               LR          ; start first threa
                                                             d
-   30 0000000A         
-   31 0000000A 00 00           ALIGN
-   32 0000000C                 END
+   53 00000044         
+   54 00000044                 ALIGN
+   55 00000044                 END
+              00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4 --apcs=interw
 ork --depend=.\objects\osasm.d -o.\objects\osasm.o -I.\RTE\_Target -IC:\Keil_v5
 \ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1
@@ -68,11 +132,11 @@ Symbol: .text
    Uses
       None
 Comment: .text unused
-StartOS 00000006
+StartOS 00000026
 
 Symbol: StartOS
    Definitions
-      At line 26 in file osasm.s
+      At line 40 in file osasm.s
    Uses
       At line 15 in file osasm.s
 Comment: StartOS used once
@@ -97,15 +161,16 @@ Symbol: RunPt
    Definitions
       At line 14 in file osasm.s
    Uses
-      None
-Comment: RunPt unused
+      At line 23 in file osasm.s
+      At line 42 in file osasm.s
+
 Scheduler 00000000
 
 Symbol: Scheduler
    Definitions
       At line 17 in file osasm.s
    Uses
-      None
-Comment: Scheduler unused
+      At line 31 in file osasm.s
+Comment: Scheduler used once
 2 symbols
-339 symbols in table
+341 symbols in table

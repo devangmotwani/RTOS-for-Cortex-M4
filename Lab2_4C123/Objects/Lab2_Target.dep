@@ -1,15 +1,15 @@
 Dependencies for Project 'Lab2', Target 'Target': (DO NOT MODIFY !)
-F (.\Lab2.c)(0x57C77402)(--c99 -c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I ../inc-I.\RTE\_Target-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123-D__UVISION_VERSION="525" -D_RTE_ -DTM4C123GH6PM-o .\objects\lab2.o --omf_browse .\objects\lab2.crf --depend .\objects\lab2.d)
+F (.\Lab2.c)(0x5B78E3F2)(--c99 -c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I ../inc-I.\RTE\_Target-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123-D__UVISION_VERSION="525" -D_RTE_ -DTM4C123GH6PM-o .\objects\lab2.o --omf_browse .\objects\lab2.crf --depend .\objects\lab2.d)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599F75EE)
 I (../inc/BSP.h)(0x57BA42C4)
 I (../inc/Profile.h)(0x57587A54)
 I (Texas.h)(0x56D8B97C)
 I (../inc/CortexM.h)(0x56B73956)
-I (os.h)(0x57C77402)
-F (.\osasm.s)(0x57BE55D2)(--cpu Cortex-M4 --pd "__EVAL SETA 1" -g --apcs=interwork -I.\RTE\_Target-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123--pd "__UVISION_VERSION SETA 525" --pd "_RTE_ SETA 1" --pd "TM4C123GH6PM SETA 1"--list .\listings\osasm.lst --xref -o .\objects\osasm.o --depend .\objects\osasm.d)
-F (.\os.c)(0x57C77402)(--c99 -c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I ../inc-I.\RTE\_Target-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123-D__UVISION_VERSION="525" -D_RTE_ -DTM4C123GH6PM-o .\objects\os.o --omf_browse .\objects\os.crf --depend .\objects\os.d)
+I (os.h)(0x5B78821D)
+F (.\osasm.s)(0x5B787959)(--cpu Cortex-M4 --pd "__EVAL SETA 1" -g --apcs=interwork -I.\RTE\_Target-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123--pd "__UVISION_VERSION SETA 525" --pd "_RTE_ SETA 1" --pd "TM4C123GH6PM SETA 1"--list .\listings\osasm.lst --xref -o .\objects\osasm.o --depend .\objects\osasm.d)
+F (.\os.c)(0x5B78E07A)(--c99 -c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I ../inc-I.\RTE\_Target-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123-D__UVISION_VERSION="525" -D_RTE_ -DTM4C123GH6PM-o .\objects\os.o --omf_browse .\objects\os.crf --depend .\objects\os.d)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599F75EE)
-I (os.h)(0x57C77402)
+I (os.h)(0x5B78821D)
 I (../inc/CortexM.h)(0x56B73956)
 I (../inc/BSP.h)(0x57BA42C4)
 F (..\inc\BSP.c)(0x57BA42C4)(--c99 -c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I ../inc-I.\RTE\_Target-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123-D__UVISION_VERSION="525" -D_RTE_ -DTM4C123GH6PM-o .\objects\bsp.o --omf_browse .\objects\bsp.crf --depend .\objects\bsp.d)
